@@ -1,0 +1,25 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Thêm sản phẩm</title>
+    <link rel="stylesheet" href="{% static 'css/css_addproduct.css' %}"/>
+</head>
+<body>
+    <h1>Thêm sản phẩm</h1>
+    <div class="form-container">
+        <form method="post">
+            {% csrf_token %}
+            <label><span>Tên:</span><input type="text" name="name"></label><br>
+            <label><span>Mã:</span><input type="text" name="code"></label><br>
+            <label><span>Giá:</span><input type="number" name="price"></label><br>
+            <label><span>Số Lượng:</span><input type="number" name="stock"></label><br>
+            <label><span>Loại:</span><input type="text" name="category"></label><br>
+            <label><span>Thương hiệu:</span><input type="text" name="brand"></label><br>
+            <label><span>Ngày nhập:</span><input type="date" name="import_date"></label><br>
+            <label><span>Hình ảnh:</span><input type="file" name="image" accept="image/*"></label>
+            <button type="submit">Thêm</button>
+        </form>
+    </div>
+</body>
+</html>

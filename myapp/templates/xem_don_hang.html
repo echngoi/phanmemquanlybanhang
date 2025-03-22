@@ -1,0 +1,93 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Danh Sách Đơn Hàng</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        
+        a {
+            text-decoration: none;
+            padding: 5px 10px;
+            margin: 0 5px;
+            border-radius: 4px;
+        }
+        
+        a:first-child {
+            background-color: #008CBA;
+            color: white;
+        }
+        
+        a:last-child {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        a:hover {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <h1>Danh Sách Đơn Hàng</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Khách Hàng</th>
+                <th>Ngày Tạo</th>
+                <th>Tổng Tiền</th>
+                <th>Trạng Thái</th>
+                <th>Hành Động</th>
+                <th>In Hóa Đơn</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for don_hang in don_hangs %}
+            <tr>
+                <td>{{ don_hang.khach_hang.ten }}</td>
+                <td>{{ don_hang.ngay_tao }}</td>
+                <td>{{ don_hang.tong_tien }}</td>
+                <td>{{ don_hang.trang_thai }}</td>
+                <td>
+                    <a href="{% url 'chinh_sua_don_hang' don_hang.id %}">Chỉnh sửa</a>
+                    <a href="{% url 'xoa_don_hang' don_hang.id %}">Xóa</a>
+                </td>
+                <td>
+                    <a href="{% url 'in_hoa_don' don_hang_id=don_hang.id %}">In hóa đơn</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

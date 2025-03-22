@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Danh sách hàng hóa</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th.sticky-header{
+        }
+    </style>
+    <style>
+        h1.sticky-header {
+            position: sticky;
+            top: 0;
+            background-color: white;
+            z-index: 100;
+        }
+        tr:hover {
+            background-color: #e0f7fa;
+        }
+        .pagination {
+            text-align: center;
+            margin-top: 20px;
+        }
+        /* tạo css cho phân trang */
+
+        .pagination a,
+        .pagination .current {
+            padding: 8px 12px;
+            margin: 0 5px;
+            border: 1px solid #ccc;
+            text-decoration: none;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        
+        .pagination a:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .pagination .current {
+            background-color: #4CAF50;
+            color: white;
+            border: 1px solid #4CAF50;
+        }
+        /* tạo css cho lọc và tìm kiếm */
+        form {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        form input[type="text"] {
+            padding: 8px 12px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            outline: none;
+            transition: border-color 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        form input[type="text"]:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+        
+        form button {
+            padding: 8px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        form button:hover {
+            background-color: #0056b3;
+        }
+        
+        body {
+            display: flex;
+            flex-direction: column; /* Để form và bảng xếp chồng lên nhau */
+            justify-content: flex-start; /* Để form ở đầu trang */
+            align-items: center;
+            min-height: 100vh; /* Để đảm bảo căn chỉnh theo chiều dọc trên toàn bộ chiều cao màn hình */
+            margin: 30px; /* Loại bỏ margin mặc định của body */
+        }
+        
+        form {
+            /* Thêm các kiểu dáng khác cho form nếu cần */
+            margin-bottom: 20px; /* Thêm khoảng cách giữa form và bảng */
+        }
+        
+        
+        th {
+            background-color:rgb(84, 116, 212);
+            color: white;
+            padding: 12px 15px; /* Tăng padding để dễ đọc hơn */
+            text-align: left;
+        }
+        
+        .action-column {
+            width:20px;
+           
+            text-align: center; /* Căn giữa nội dung trong cột */
+            white-space: nowrap;
+        }
+        .delete-product i {
+            text-align: center;
+            font-size: 1.2em; /* Điều chỉnh kích thước biểu tượng */
+            color: red; /* Điều chỉnh màu sắc biểu tượng */
+            display: block; /* Chuyển biểu tượng thành phần tử block */
+            
+        }
+        
+        .modal {
+            display: none; /* Ẩn modal mặc định */
+            position: fixed; /* Cố định vị trí modal */
+            z-index: 1; /* Hiển thị modal trên cùng */
+            
+            margin: 10vh auto;
+            width: auto; /* Chiều rộng full màn hình */
+            height: auto; /* Chiều cao full màn hình */
+            
+            background-color: rgba(0, 0, 0, 0.4); /* Màu nền mờ */
+        }
+        
+        
+        .modal-content {
+            background-color:rgb(140, 205, 214);
+            
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px 30px;
+            position: relative;
+            width: 100%;
+            position: relative;
+            z-index: 101;
+            
+        }
+        
+        
+        #add-product-form {
+           
+            display: flex;
+            
+        }
+        
+        #add-product-form label,
+        #add-product-form input {
+            margin-bottom: 10px;
+        }
+        .phanloai{
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+        #add-product-form input[type="text"],
+        #add-product-form input[type="number"],
+        #add-product-form input[type="date"] {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        
+        #add-product-form button[type="submit"] {
+            padding: 10px 20px;
+            
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            position: absolute; 
+            top: 5px;
+            right: 10px;
+            cursor: pointer;
+        }
+        
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        #add-product-btn{
+            padding: 8px 15px;
+            margin-left:10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        #add-product-btn:hover{
+            background-color: #0056b3;
+        }
+        #add-product-form {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-row {
+            display: flex;
+            
+            
+            white-space: nowrap;
+            
+            
+            
+        }
+        .form-row-1{
+            margin-bottom: 40px;
+        }
+        
+        .form-row label {
+            width: 30%;
+            
+            padding-right: 5px;
+        }
+        
+        .form-row input {
+            width: 65%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            
+        }
+        
+        #add-product-form button[type="submit"] {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            align-self: center; /* Căn giữa nút "Thêm" */
+        }
+        .dong2{
+            margin-top: 7px;
+        }
+    </style>
+</head>
+<body>
+    <h1 class="sticky-header" style="text-align: center;">Danh Sách Hàng Hóa</h1>
+    <div id="add-product-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 class = "themsanpham">Thêm sản phẩm</h2>
+            <form id="add-product-form">
+                <div class="form-row-1"> 
+                    <label for="name">Tên:</label>
+                    <input type="text" id="name" name="name" required>
+    
+                    <label for="code">Mã:</label>
+                    <input type="text" id="code" name="code" required>
+                    <label for="price">Giá:</label>
+                    <input type="number" id="price" name="price" required>
+                    <label for="price">Số lượng:</label>
+                    <input type="number" id="price" name="stock" required>
+
+                </div>
+                <div class="form-row"> 
+    
+                    <label class="dong2" for="category">Phân loại:</label>
+                  
+                    <select class = "phanloai"id="category" name="category" required>
+                        <option value="">Chọn phân loại</option>
+                        {% for category in categories %}
+                            <option value="{{ category.id }}">{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                
+                    <label class="dong2" for="brand">Thương hiệu:</label>
+                    <input type="text" id="brand" name="brand" required>
+    
+                    <label class="dong2" for="import_date">Ngày nhập:</label>
+                    <input type="date" id="import_date" name="import_date" required>
+                </div>
+                <button type="submit">Thêm</button>
+            </form>
+        </div>
+    </div>
+    <form method="get">
+        <input class ="timkiem" type="text" name="code" placeholder="Mã Hàng hóa">
+        <input class ="timkiem" type="text" name="name" placeholder="Tên hàng hóa">
+        <input class ="timkiem" type="text" name="search" placeholder="Tìm kiếm">
+        <button class ="timkiem" type="submit">Tìm kiếm</button>
+        <button type="button" id="add-product-btn">Thêm sản phẩm</button>
+    </form>
+  
+        <table>
+            <thead>
+                <tr>
+                    <th class="sticky-header">Tên Hàng Hóa</th>
+                    <th class="sticky-header"> Mã Hàng Hóa</th>
+                    <th class="sticky-header">Giá</th>
+                    <th class="sticky-header">Tồn Kho</th>
+                    <th class="sticky-header">Phân Loại</th>
+                    <th class="sticky-header">Thương Hiệu</th>
+                    <th class="sticky-header">Ngày nhập</th>
+                    <th class="sticky-header action-column ">Xóa</th> </tr>
+                    
+                </tr>
+            </thead>
+            <tbody>
+                {% for sanpham in page_obj %}
+                <tr id="sanpham-{{ sanpham.id }}">
+                    <td>{{ sanpham.name }}</td>
+                    <td>{{ sanpham.code }}</td>
+                    <td>{{ sanpham.price }}</td>
+                    <td>{{ sanpham.stock }}</td>
+                    <td>{{ sanpham.category }}</td>
+                    <td>{{ sanpham.brand }}</td>
+                    <td>{{ sanpham.import_date|date:"d/m/Y" }}</td>
+                    <td>
+                        <button class="delete-product" data-id="{{ sanpham.id }}">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="pagination">
+            <span class="step-links">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1{% if name %}&name={{ name }}{% endif %}{% if search %}&search={{ search }}{% endif %}">&laquo; Trang đầu tiên</a>
+                    <a href="?page={{ page_obj.previous_page_number }}{% if name %}&name={{ name }}{% endif %}{% if search %}&search={{ search }}{% endif %}">Trước</a>
+                {% endif %}
+        
+                <span class="current">
+                    Trang {{ page_obj.number }} của {{ page_obj.paginator.num_pages }}
+                </span>
+        
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}{% if name %}&name={{ name }}{% endif %}{% if search %}&search={{ search }}{% endif %}">Tiếp</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}{% if name %}&name={{ name }}{% endif %}{% if search %}&search={{ search }}{% endif %}">Trang cuối cùng &raquo;</a>
+                {% endif %}
+            </span>
+        </div>      
+
+</body>
+<script>
+    // xử lý doubclick chuột vào hàng sản phẩm
+    document.querySelectorAll('tbody tr').forEach(row => {
+        row.addEventListener('dblclick', function() {
+            const productId = this.id.split('-')[1];
+            const sanphamData = {
+                name: this.cells[0].textContent,
+                code: this.cells[1].textContent,
+                price: this.cells[2].textContent,
+                category: this.cells[3].textContent,
+                brand: this.cells[4].textContent,
+                import_date: this.cells[5].textContent,
+            };
+            const originalContent = this.innerHTML;
+    
+            const form = `
+                <form id="edit-form-${productId}">
+                    <input type="text" name="name" value="${sanphamData.name}">
+                    <input type="text" name="code" value="${sanphamData.code}">
+                    <input type="text" name="price" value="${sanphamData.price}">
+                    <input type="text" name="category" value="${sanphamData.category}">
+                    <input type="text" name="brand" value="${sanphamData.brand}">
+                    <input type="text" name="import_date" value="${sanphamData.import_date}">
+                    <div style="display: flex; gap: 10px;">
+                        <button type="submit">Lưu</button>
+                        <button type="button" id="cancel-button-${productId}">Hủy</button>
+                    </div>
+                </form>
+            `;
+    
+            this.innerHTML = `<td></td><td colspan="6">${form}</td>`;
+    
+            document.getElementById(`edit-form-${productId}`).addEventListener('submit', function(event) {
+                event.preventDefault();
+                const formData = new FormData(this);
+            
+                fetch(`/product/${productId}/edit/`, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken'),
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        row.innerHTML = `
+                            <td class="name">${data.product.name}</td>
+                            <td class="code">${data.product.code}</td>
+                            <td class="price">${data.product.price}</td>
+                            <td class="category">${data.product.category}</td>
+                            <td class="brand">${data.product.brand}</td>
+                            <td class="import_date">${formatDate(data.product.import_date)}</td>
+                        `;
+                        alert('Cập nhật thành công!');
+                    } else {
+                        alert('Có lỗi xảy ra: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Lỗi fetch:', error);
+                    alert('Lỗi kết nối hoặc lỗi server!');
+                });
+            });
+    
+            document.getElementById(`cancel-button-${productId}`).addEventListener('click', function() {
+                row.innerHTML = originalContent;
+            });
+        });
+    });
+
+    // Hàm lấy CSRF token từ cookie 
+    function getCookie(name) {
+        let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+        return cookieValue;
+        
+    }
+    //ham fomat date 
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+    }
+    // xử lý nút xóa sản phẩm
+    document.querySelectorAll('.delete-product').forEach(button => {
+        button.addEventListener('click', function() {
+            const productId = this.getAttribute('data-id');
+            if (confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')) {
+                fetch(`/product/${productId}/delete/`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken'),
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        document.getElementById(`sanpham-${productId}`).remove();
+                        alert('Xóa thành công!');
+                    } else {
+                        alert('Có lỗi xảy ra: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Lỗi fetch:', error);
+                    alert('Lỗi kết nối hoặc lỗi server!');
+                });
+            }
+        });
+    });
+    // xử lý cho modal khi clic nút thêm sản phẩm
+    const modal = document.getElementById('add-product-modal');
+    const btn = document.getElementById('add-product-btn');
+    const span = document.getElementsByClassName('close')[0];
+
+    btn.onclick = function() {
+        modal.style.display = 'block';
+    }
+
+    span.onclick = function() {
+         modal.style.display = 'none';
+    }
+
+    window.onclick = function(event) {
+         if (event.target == modal) {
+        modal.style.display = 'none';
+    }
+    }
+    // xử lý form thêm sản phẩm cho modal
+    document.getElementById('add-product-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+    
+        fetch('/product/add/', { // Thay đổi URL cho phù hợp
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert('Thêm sản phẩm thành công!');
+                modal.style.display = 'none';
+                // Thêm sản phẩm mới vào bảng (nếu cần)
+                location.reload(); // tải lại trang để hiển thị sản phẩm mới.
+            } else {
+                alert('Có lỗi xảy ra: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Lỗi fetch:', error);
+            alert('Lỗi kết nối hoặc lỗi server!');
+        });
+    });
+</script>
+</html>

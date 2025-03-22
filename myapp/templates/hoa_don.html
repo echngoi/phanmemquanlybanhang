@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hóa Đơn #{{ don_hang.id }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        p {
+            margin-bottom: 10px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        
+        th {
+            background-color: #f2f2f2;
+        }
+        
+        tfoot td {
+            font-weight: bold;
+        }
+        
+        .invoice-details {
+            margin-bottom: 20px;
+        }
+        
+        .invoice-details p {
+            margin: 5px 0;
+        }
+        
+        .company-info {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+        
+        .company-info p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Hóa Đơn #{{ don_hang.id }}</h1>
+    <p>Khách hàng: {{ don_hang.khach_hang.ten }}</p>
+    <p>Ngày tạo: {{ don_hang.ngay_tao }}</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Sản phẩm</th>
+                <th>Số lượng</th>
+                <th>Giá</th>
+                <th>Tổng</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for chi_tiet in don_hang.chitietdonhang_set.all %}
+            <tr>
+                <td>{{ chi_tiet.san_pham.name }}</td>
+                <td>{{ chi_tiet.so_luong }}</td>
+                <td>{{ chi_tiet.gia }}</td>
+                <td>{{ tong_tien_chi_tiet|slice:forloop.counter|last|floatformat:",2" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3">Tổng tiền:</td>
+                <td>{{ don_hang.tong_tien|floatformat:",2" }}</td>
+            </tr>
+        </tfoot>
+    </table>
+</body>
+</html>
