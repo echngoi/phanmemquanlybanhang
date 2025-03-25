@@ -15,7 +15,7 @@ from django.db import transaction
 
 from django.http import HttpResponse
 from django.template.loader import render_to_string
-import pdfkit
+
 
 
 
@@ -107,7 +107,7 @@ def product_list(request):
     return render(request, 'product_list.html', context)
 
 
-# hàm xử lý edit bệnh nhân
+# hàm xử lý edit sản phẩm
 
 def edit_product(request, product_id):
     product = get_object_or_404(Product, id=product_id)
@@ -153,102 +153,5 @@ def delete_product(request, product_id):
 # xử lý chức năng tạo đơn hàng
 
 def tao_don_hang(request):
-    products = Product.objects.all() # Lấy danh sách sản phẩm
-
-    if request.method == 'POST':
-        ten_khach_hang = request.POST.get('ten_khach_hang')
-        so_dien_thoai = request.POST.get('so_dien_thoai')
-        san_phams = request.POST.getlist('san_pham[]')
-        so_luongs = request.POST.getlist('so_luong[]')
-
-        with transaction.atomic():
-            khach_hang = KhachHang.objects.create(ten=ten_khach_hang, so_dien_thoai=so_dien_thoai)
-            don_hang = DonHang.objects.create(khach_hang=khach_hang, tong_tien=0)
-
-            tong_tien = 0
-            for i in range(len(san_phams)):
-                san_pham = Product.objects.get(id=san_phams[i])
-                so_luong = int(so_luongs[i])
-                gia = san_pham.price
-                ChiTietDonHang.objects.create(don_hang=don_hang, san_pham=san_pham, so_luong=so_luong, gia=gia)
-                tong_tien += so_luong * gia
-
-            don_hang.tong_tien = tong_tien
-            don_hang.save()
-
-        return redirect('xem_don_hang')
-
+    products = Product.objects.all()
     return render(request, 'tao_don_hang.html', {'products': products})
-
-# xem đơn hàng
-def xem_don_hang(request):
-    don_hangs = DonHang.objects.all()
-    return render(request, 'xem_don_hang.html', {'don_hangs': don_hangs})
-
-# chỉnh sửa đơn hàng
-def chinh_sua_don_hang(request, don_hang_id):
-    don_hang = DonHang.objects.get(pk=don_hang_id)
-    if request.method == 'POST':
-        form = DonHangForm(request.POST, instance=don_hang)
-        if form.is_valid():
-            form.save()
-            return redirect('xem_don_hang')
-    else:
-        form = DonHangForm(instance=don_hang)
-    return render(request, 'chinh_sua_don_hang.html', {'form': form})
-
-# Xóa đơn hàng
-def xoa_don_hang(request, don_hang_id):
-    don_hang = DonHang.objects.get(pk=don_hang_id)
-    don_hang.delete()
-    return redirect('xem_don_hang')
-
-# Tìm kiếm sản phẩm
-def tim_kiem_san_pham(request):
-    ma_san_pham = request.GET.get('ma')
-    ten_san_pham = request.GET.get('ten')
-
-    if ma_san_pham:
-        san_phams = Product.objects.filter(code__icontains=ma_san_pham)
-    elif ten_san_pham:
-        san_phams = Product.objects.filter(name__icontains=ten_san_pham)
-    else:
-        return JsonResponse({'san_phams': []})
-
-    data = {
-        'san_phams': [{
-            'id': san_pham.id,
-            'ten': san_pham.name,
-            'ma': san_pham.code,
-        } for san_pham in san_phams]
-    }
-    return JsonResponse(data)
-
-# in hóa đơn
-
-def in_hoa_don(request, don_hang_id):
-    don_hang = get_object_or_404(DonHang, pk=don_hang_id)
-    chi_tiet_don_hang = don_hang.chitietdonhang_set.all()
-    
-    # Tính toán tổng tiền cho từng chi tiết
-    tong_tien_chi_tiet = [chi_tiet.so_luong * chi_tiet.gia for chi_tiet in chi_tiet_don_hang]
-
-    context = {
-        'don_hang': don_hang,
-        'tong_tien_chi_tiet': tong_tien_chi_tiet,
-    }
-    return HttpResponse(render_to_string('hoa_don.html', context)) #Sử dụng render_to_string để tạo html_string và trả về HttpResponse
-# xem trước hóa đơn
-
-def xem_truoc_hoa_don(request, don_hang_id):
-    don_hang = get_object_or_404(DonHang, pk=don_hang_id)
-    chi_tiet_don_hang = don_hang.chitietdonhang_set.all()
-    
-    # Tính toán tổng tiền cho từng chi tiết
-    tong_tien_chi_tiet = [chi_tiet.so_luong * chi_tiet.gia for chi_tiet in chi_tiet_don_hang]
-
-    context = {
-        'don_hang': don_hang,
-        'tong_tien_chi_tiet': tong_tien_chi_tiet,
-    }
-    return render(request, 'hoa_don.html', context)

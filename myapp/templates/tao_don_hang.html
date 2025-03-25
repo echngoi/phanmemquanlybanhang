@@ -3,184 +3,117 @@
 <head>
     <title>Tạo Đơn Hàng Mới</title>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
+        <style>
+            body {
+                font-family: sans-serif;
+                margin: 20px;
+            }
         
-        h1 {
-            text-align: center;
-            color: #333;
-        }
+            form label {
+                display: block;
+                margin-top: 10px;
+            }
         
-        .order-form {
-            width: 60%;
-            margin: 20px auto;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            background-color: #f9f9f9;
-        }
+            form input, form select, form button {
+                width: 100%;
+                padding: 8px;
+                margin-top: 5px;
+                box-sizing: border-box;
+            }
         
-        .form-section {
-            margin-bottom: 20px;
-        }
+            #form_khach_hang_moi {
+                border: 1px solid #ccc;
+                padding: 10px;
+                margin-top: 10px;
+            }
         
-        h2 {
-            margin-top: 0;
-            color: #555;
-        }
+            #danh_sach_san_pham table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+            }
         
-        .form-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
+            #danh_sach_san_pham th, #danh_sach_san_pham td {
+                border: 1px solid #ddd;
+                padding: 8px;
+                text-align: left;
+            }
         
-        label {
-            flex-basis: 30%;
-            text-align: right;
-            padding-right: 10px;
-            line-height: 30px;
-        }
+            #danh_sach_san_pham th {
+                background-color: #f2f2f2;
+            }
         
-        input[type="text"],
-        input[type="number"],
-        select {
-            flex-basis: 65%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
+            #tong_tien_tam_tinh {
+                font-weight: bold;
+            }
         
-        .save-button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            float: right;
-        }
-        
-        .save-button:hover {
-            background-color: #45a049;
-        }
-        .san-pham-row {
-            display: flex;
-            margin-bottom: 10px;
-        }
-        
-        .san-pham-row select,
-        .san-pham-row input[type="number"] {
-            flex-basis: 45%;
-            margin-right: 10px;
-        }
-        
-        .san-pham-row button {
-            flex-basis: 10%;
-        }
+            button {
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 16px;
+                margin-top: 20px;
+                cursor: pointer;
+            }
+
     </style>
 </head>
 <body>
     <h1>Tạo Đơn Hàng Mới</h1>
 
-    <form method="post" class="order-form">
+    <form >
         {% csrf_token %}
-
-        <div class="form-section">
-            <h2>Thông tin khách hàng</h2>
-            <div class="form-row">
-                <label for="ten_khach_hang">Tên khách hàng:</label>
-                <input type="text" name="ten_khach_hang" id="ten_khach_hang" required>
-            </div>
-            <div class="form-row">
-                <label for="so_dien_thoai">Số điện thoại:</label>
-                <input type="text" name="so_dien_thoai" id="so_dien_thoai" required>
-            </div>
+    
+        <label for="so_dien_thoai">Số điện thoại:</label>
+        <input type="text" name="so_dien_thoai" id="so_dien_thoai">
+    
+        <label for="ten_khach_hang">Tên khách hàng:</label>
+        <input type="text" name="ten_khach_hang" id="ten_khach_hang" readonly>
+    
+        <label for="ma_san_pham">Mã sản phẩm:</label>
+        <input type="text" id="ma_san_pham">
+    
+        <label for="ten_san_pham">Tên sản phẩm:</label>
+        <input type="text" id="ten_san_pham">
+    
+        <div id="san_pham_tim_kiem">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tên sản phẩm</th>
+                        <th>Mã sản phẩm</th>
+                        <th>Giá</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
         </div>
-
-        <div class="form-section">
-            <h2>Chọn sản phẩm</h2>
-            <div class="form-row">
-                <label for="ma_san_pham">Mã sản phẩm:</label>
-                <input type="text" id="ma_san_pham">
-            </div>
-            <div class="form-row">
-                <label for="ten_san_pham">Tên sản phẩm:</label>
-                <input type="text" id="ten_san_pham">
-            </div>
-            <button type="button" id="them_san_pham_tu_tim_kiem">Thêm sản phẩm</button>
+    
+        <div id="danh_sach_san_pham">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tên sản phẩm</th>
+                        <th>Số lượng</th>
+                        <th>Giá</th>
+                        <th>Tổng</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
         </div>
-
-        <div class="form-section">
-            <h2>Danh sách sản phẩm chọn mua</h2>
-            <div id="san_pham_container">
-                </div>
-        </div>
-
-        <button type="submit" class="save-button">Lưu Đơn Hàng</button>
+    
+        <p>Tổng tiền tạm tính: <span id="tong_tien_tam_tinh">0</span></p>
+    
+        <button type="button">Tạo đơn hàng</button>
     </form>
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <script>
-        $(document).ready(function() {
-            $('#ma_san_pham').autocomplete({
-                source: function(request, response) {
-                    $.ajax({
-                        url: '/tim-kiem-san-pham/', // Thay đổi URL nếu cần
-                        data: { ma: request.term },
-                        success: function(data) {
-                            response($.map(data.san_phams, function(item) {
-                                return { label: item.ma, value: item.ma, san_pham: item };
-                            }));
-                        }
-                    });
-                },
-                select: function(event, ui) {
-                    themSanPhamVaoDanhSach(ui.item.san_pham);
-                    return false;
-                }
-            });
-
-            $('#ten_san_pham').autocomplete({
-                source: function(request, response) {
-                    $.ajax({
-                        url: '/tim-kiem-san-pham/', // Thay đổi URL nếu cần
-                        data: { ten: request.term },
-                        success: function(data) {
-                            response($.map(data.san_phams, function(item) {
-                                return { label: item.ten, value: item.ten, san_pham: item };
-                            }));
-                        }
-                    });
-                },
-                select: function(event, ui) {
-                    themSanPhamVaoDanhSach(ui.item.san_pham);
-                    return false;
-                }
-            });
-
-            function themSanPhamVaoDanhSach(sanPham) {
-                const sanPhamContainer = $('#san_pham_container');
-                const newSanPhamRow = $('<div>').addClass('san-pham-row');
-                newSanPhamRow.html(`
-                    <span>${sanPham.ten} - ${sanPham.ma}</span>
-                    <input type="hidden" name="san_pham[]" value="${sanPham.id}">
-                    <input type="number" name="so_luong[]" placeholder="Số lượng" required>
-                    <button type="button" class="remove-san-pham">Xóa</button>
-                `);
-                sanPhamContainer.append(newSanPhamRow);
-
-                newSanPhamRow.find('.remove-san-pham').click(function() {
-                    newSanPhamRow.remove();
-                });
-            }
-        });
-    </script>
+    
 </body>
 </html>
